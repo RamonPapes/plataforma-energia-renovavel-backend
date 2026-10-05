@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES6", // Alvo de compilação
+    "module": "commonjs", // Sistema de módulo
+    "outDir": "./dist", // Diretório de saída
+    "rootDir": "./src", // Diretório raiz do código fonte
+    "strict": true, // Habilitar verificações estritas
+    "esModuleInterop": true, // Interoperabilidade com ES Modules
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false,
+    "experimentalDecorators": true,
+    "skipLibCheck": true, // Pular checagem de tipos em arquivos de definição
+    "forceConsistentCasingInFileNames": true, // Forçar consistência de maiúsculas e minúsculas nos nomes de arquivos
+    "typeRoots": [
+      "./src/@types"
+    ]
+  },
+  "include": [
+    "src/**/*"
+  ], // Incluir todos os arquivos .ts no diretório src
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ] // Excluir arquivos de teste
+}
