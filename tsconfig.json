@@ -12,7 +12,8 @@
     "skipLibCheck": true, // Pular checagem de tipos em arquivos de definição
     "forceConsistentCasingInFileNames": true, // Forçar consistência de maiúsculas e minúsculas nos nomes de arquivos
     "typeRoots": [
-      "./src/@types"
+      "./src/@types",
+      "./node_modules/@types"
     ]
   },
   "include": [

@@ -2,11 +2,14 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "dev": "tsx watch --env-file-if-exists=.env src/server.ts",
     "build": "tsc",
+    "typeorm": "tsx --env-file-if-exists=.env ./node_modules/typeorm/cli.js -d src/database/data-source.ts",
+    "migration:run": "npm run typeorm -- migration:run",
+    "migration:revert": "npm run typeorm -- migration:revert",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -15,9 +18,13 @@
   "type": "commonjs",
   "dependencies": {
     "express": "^5.2.1",
-    "reflect-metadata": "^0.2.2"
+    "mysql2": "^3.24.5",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^1.1.1"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.4",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   }
