@@ -1,0 +1,32 @@
+import { Request, Response } from "express";
+import { AuthService } from "../services/AuthService";
+
+class AuthController {
+    async loginHandle(req: Request, res: Response) {
+        const { email, senha } = req.body;
+
+        if (!email || !senha) {
+            return res.status(400).json({ error: "Email e Senha são obrigatórios" });
+        }
+
+        if (email.length > 150) {
+            return res.status(400).json({ error: "O campo email não pode conter mais que 150 caracteres" });
+        }
+
+        const authService = new AuthService();
+
+        try {
+            const { token, usuario } = await authService.login({ email, senha });
+
+            return res.status(200).json({ token, usuario });
+
+        } catch (error) {
+            if (error instanceof Error) {
+                return res.status(401).json({ error: error.message });
+            }
+            return res.status(500).json({ error: "Erro interno inesperado." });
+        }
+    }
+}
+
+export { AuthController };

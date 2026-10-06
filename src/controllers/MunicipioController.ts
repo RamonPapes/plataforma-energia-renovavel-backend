@@ -1,4 +1,4 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 import { MunicipioService } from "../services/MunicipioService";
 
 class MunicipioController {
