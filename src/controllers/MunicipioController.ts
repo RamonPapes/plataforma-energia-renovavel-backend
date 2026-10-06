@@ -20,13 +20,32 @@ class MunicipioController {
 
             return res.status(200).json(municipio);
         }
-        catch(error){
-            if(error instanceof Error){
+        catch (error) {
+            if (error instanceof Error) {
                 return res.status(400).json({ error: error.message });
             }
 
             return res.status(400).json({ error: "Erro interno inesperado" });
         }
+    }
+
+    async getMunicipiosHandle(req: Request, res: Response) {
+
+        const municipioService = new MunicipioService();
+
+        try {
+            const municipios = await municipioService.getMunicipios();
+
+            return res.status(200).json(municipios);
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                return res.json(400).json({ error: error.message });
+            }
+
+            return res.json(400).json({ error: "Erro interno inesperado" });
+        }
+
     }
 }
 

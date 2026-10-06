@@ -15,7 +15,7 @@ class MunicipioService {
             uf
         });
 
-        if(municipioAlreadyExists){
+        if (municipioAlreadyExists) {
             throw new Error("Este município já está cadastrado para esta UF.");
         }
 
@@ -31,6 +31,11 @@ class MunicipioService {
 
         return municipio;
     }
+
+    async getMunicipios() {
+        return await MunicipioRepository.find();
+    }
+
 }
 
 export { MunicipioService };
