@@ -11,9 +11,9 @@ export const AppDataSource = new DataSource({
     database: process.env.DB_NAME ?? "plataforma-energia-renovavel",
     synchronize: false,
     logging: false,
-    // Globs relativos ao arquivo para funcionar tanto com tsx (src/*.ts) quanto com o build (dist/*.js)
-    entities: [path.join(__dirname, "..", "models", "*.{ts,js}")],
-    migrations: [path.join(__dirname, "migrations", "*.{ts,js}")],
+    // Entidades importadas diretamente para funcionar tanto com tsx (src/*.ts) quanto com o build (dist/*.js)
+    entities: ["src/models/*.ts"],
+    migrations: ["src/database/migrations/*.ts"],
     subscribers: [],
 })
 

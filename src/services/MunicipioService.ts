@@ -1,0 +1,36 @@
+import { MunicipioRepository } from "../repository/municipioRepository";
+
+interface IMunicipioRequest {
+    nome: string;
+    uf: string;
+    populacao: number;
+    idh: number;
+    coordenadas: string;
+}
+
+class MunicipioService {
+    async createMunicipio({ nome, uf, populacao, idh, coordenadas }: IMunicipioRequest) {
+        const municipioAlreadyExists = await MunicipioRepository.findOneBy({
+            nome,
+            uf
+        });
+
+        if(municipioAlreadyExists){
+            throw new Error("Este município já está cadastrado para esta UF.");
+        }
+
+        const municipio = await MunicipioRepository.create({
+            nome,
+            uf,
+            populacao,
+            idh,
+            coordenadas
+        });
+
+        await MunicipioRepository.save(municipio);
+
+        return municipio;
+    }
+}
+
+export { MunicipioService };
