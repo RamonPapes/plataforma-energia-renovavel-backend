@@ -1,8 +1,8 @@
 import { Request, response, Response } from "express";
-import { MunicipioService } from "../services/MunicipioService"; import { request } from "node:http";
+import { MunicipioService } from "../services/MunicipioService";
 
 class MunicipioController {
-    async handle(req: Request, res: Response) {
+    async createMunicipioHandle(req: Request, res: Response) {
         const { nome, uf, populacao, idh, coordenadas } = req.body;
 
         if (!nome) return res.status(400).json({ error: "O nome do município é obrigatório." });

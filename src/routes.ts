@@ -5,6 +5,6 @@ const router = Router();
 
 const municipioController = new MunicipioController();
 
-router.post("/municipios", municipioController.handle);
+router.post("/municipios", municipioController.createMunicipioHandle);
 
 export { router }
