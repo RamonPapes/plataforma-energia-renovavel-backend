@@ -13,6 +13,7 @@ export const AppDataSource = new DataSource({
     database: process.env.DB_NAME ?? "plataforma-energia-renovavel",
     synchronize: false,
     logging: false,
+    timezone: "Z",
     // Entidades importadas diretamente para funcionar tanto com tsx (src/*.ts) quanto com o build (dist/*.js)
     entities: [Municipio, Usuario],
     // __dirname aponta para src/database (tsx) ou dist/database (build), por isso aceita .ts e .js
