@@ -33,3 +33,5 @@ Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
+# Arquivos gerados localmente (ex.: relatórios para conferência)
+out/

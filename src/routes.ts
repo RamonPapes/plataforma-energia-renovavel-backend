@@ -8,6 +8,7 @@ import { AuthController } from "./controllers/AuthController";
 import { CriterioController } from "./controllers/CriterioController";
 import { MatrizController } from "./controllers/MatrizController";
 import { SimulacaoController } from "./controllers/SimulacaoController";
+import { RelatorioController } from "./controllers/RelatorioController";
 
 const router = Router();
 
@@ -17,6 +18,7 @@ const authController = new AuthController();
 const criterioController = new CriterioController();
 const matrizController = new MatrizController();
 const simulacaoController = new SimulacaoController();
+const relatorioController = new RelatorioController();
 
 //UC01 somente Administrador cadastra, edita e remove municipio
 router.post("/municipios", ensureAuthenticated, ensureRole(Perfil.ADMINISTRADOR), municipioController.createMunicipioHandle);
@@ -47,6 +49,9 @@ router.post("/topsis/executar", ensureAuthenticated, simulacaoController.executa
 //RF10 histórico de simulações
 router.get("/simulacoes", ensureAuthenticated, simulacaoController.getSimulacoesHandle);
 router.get("/simulacoes/:id", ensureAuthenticated, simulacaoController.getSimulacaoByIdHandle);
+//UC04 relatórios da simulação (o Gestor Público é o ator principal, mas qualquer perfil autenticado pode gerar)
+router.get("/relatorios/:id/pdf", ensureAuthenticated, relatorioController.pdfHandle);
+router.get("/relatorios/:id/csv", ensureAuthenticated, relatorioController.csvHandle);
 
 // Rotas do próprio usuário logado (registradas antes de /usuarios/:id para "me" não ser lido como id)
 router.get("/usuarios/me", ensureAuthenticated, usuarioController.getMeHandle);
