@@ -5,12 +5,14 @@ import { ensureRole } from "./middlewares/ensureRole";
 import { Perfil } from "./models/Usuario";
 import { UsuarioController } from "./controllers/UsuarioController";
 import { AuthController } from "./controllers/AuthController";
+import { CriterioController } from "./controllers/CriterioController";
 
 const router = Router();
 
 const municipioController = new MunicipioController();
 const usuarioController = new UsuarioController();
 const authController = new AuthController();
+const criterioController = new CriterioController();
 
 //UC01 somente Administrador cadastra, edita e remove municipio
 router.post("/municipios", ensureAuthenticated, ensureRole(Perfil.ADMINISTRADOR), municipioController.createMunicipioHandle);
@@ -19,6 +21,16 @@ router.delete("/municipios/:id", ensureAuthenticated, ensureRole(Perfil.ADMINIST
 //Qualquer usuário autenticado pode ler os municipios
 router.get("/municipios", ensureAuthenticated, municipioController.getMunicipiosHandle);
 router.get("/municipios/:id", ensureAuthenticated, municipioController.getMunicipioByIdHandle);
+
+//UC02 Pesquisador (e Administrador) configura critérios e pesos
+// /criterios/pesos registrada antes de /criterios/:id para "pesos" não ser lido como id
+router.put("/criterios/pesos", ensureAuthenticated, ensureRole(Perfil.PESQUISADOR, Perfil.ADMINISTRADOR), criterioController.atualizarPesosHandle);
+router.post("/criterios", ensureAuthenticated, ensureRole(Perfil.PESQUISADOR, Perfil.ADMINISTRADOR), criterioController.createCriterioHandle);
+router.put("/criterios/:id", ensureAuthenticated, ensureRole(Perfil.PESQUISADOR, Perfil.ADMINISTRADOR), criterioController.updateCriterioHandle);
+router.delete("/criterios/:id", ensureAuthenticated, ensureRole(Perfil.PESQUISADOR, Perfil.ADMINISTRADOR), criterioController.deleteCriterioHandle);
+//Qualquer usuário autenticado pode ler os critérios
+router.get("/criterios", ensureAuthenticated, criterioController.getCriteriosHandle);
+router.get("/criterios/:id", ensureAuthenticated, criterioController.getCriterioByIdHandle);
 
 // Rotas do próprio usuário logado (registradas antes de /usuarios/:id para "me" não ser lido como id)
 router.get("/usuarios/me", ensureAuthenticated, usuarioController.getMeHandle);
