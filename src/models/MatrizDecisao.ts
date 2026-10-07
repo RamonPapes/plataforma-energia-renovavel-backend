@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique, Index, CreateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique, Index, CreateDateColumn, Relation } from "typeorm";
 import { decimalTransformer } from "../database/transformers";
 import { Municipio } from "./Municipio";
 import { Criterio } from "./Criterio";
@@ -17,14 +17,14 @@ export class MatrizDecisao {
 
     @ManyToOne(() => Municipio, { onDelete: "RESTRICT" })
     @JoinColumn({ name: "municipio_id" })
-    municipio: Municipio;
+    municipio: Relation<Municipio>;
 
     @Column({ type: "int" })
     criterio_id: number;
 
     @ManyToOne(() => Criterio, { onDelete: "RESTRICT" })
     @JoinColumn({ name: "criterio_id" })
-    criterio: Criterio;
+    criterio: Relation<Criterio>;
 
     @Column({ type: "decimal", precision: 15, scale: 4, transformer: decimalTransformer })
     valor: number;

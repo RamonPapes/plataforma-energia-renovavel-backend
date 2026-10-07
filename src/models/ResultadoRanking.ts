@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique, Relation } from "typeorm";
 import { decimalTransformer } from "../database/transformers";
 import { Simulacao } from "./Simulacao";
 import { Municipio } from "./Municipio";
@@ -15,14 +15,15 @@ export class ResultadoRanking {
 
     @ManyToOne(() => Simulacao, simulacao => simulacao.resultados, { onDelete: "CASCADE" })
     @JoinColumn({ name: "simulacao_id" })
-    simulacao: Simulacao;
+    // Relation<> evita a referência circular Simulacao <-> ResultadoRanking nos metadados dos decorators
+    simulacao: Relation<Simulacao>;
 
     @Column({ type: "int" })
     municipio_id: number;
 
     @ManyToOne(() => Municipio, { onDelete: "RESTRICT" })
     @JoinColumn({ name: "municipio_id" })
-    municipio: Municipio;
+    municipio: Relation<Municipio>;
 
     // Ci: quanto maior, menos vulnerável
     @Column({ type: "decimal", precision: 10, scale: 8, transformer: decimalTransformer })

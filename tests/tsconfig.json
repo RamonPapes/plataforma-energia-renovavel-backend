@@ -1,0 +1,11 @@
+{
+  // Só para checagem de tipos dos testes no editor e em "npm run test:types" (os testes são transpilados pelo SWC)
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "noEmit": true,
+    "typeRoots": ["../src/@types", "../node_modules/@types"],
+    "types": ["jest", "node"]
+  },
+  "include": ["./**/*.ts", "../src/**/*.ts"]
+}
