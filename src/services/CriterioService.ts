@@ -4,6 +4,7 @@ import { AppDataSource } from "../database/data-source";
 import { isRegistroReferenciado } from "../database/errors";
 import { CriterioRepository } from "../repository/criterioRepository";
 import { Criterio, TipoCriterio } from "../models/Criterio";
+import { IPeso, distribuirPesos, garantirSomaIgualAUm } from "../utils/pesos";
 
 interface ICriterioRequest {
     nome: string;
@@ -16,40 +17,6 @@ interface IListarCriteriosRequest {
     tipo?: TipoCriterio;
     page: number;
     limit: number;
-}
-
-interface IPesoRequest {
-    id: number;
-    peso: number;
-}
-
-// a coluna peso tem 4 casas decimais: a soma é feita em décimos de milésimo (inteiros)
-// para que pesos como 0.3333 + 0.3333 + 0.3334 deem exatamente 1, sem erro de ponto flutuante
-const ESCALA_PESO = 10000;
-
-// Converte proporções em pesos de 4 casas decimais que somam exatamente 1.
-// Usa o método do maior resto: arredonda todos para baixo e entrega as unidades que sobraram
-// (décimos de milésimo) para quem teve a maior parte descartada. Proporções todas zero viram pesos iguais.
-function distribuirPesos(proporcoes: number[]) {
-    if (proporcoes.length === 0) return [];
-
-    const somaProporcoes = proporcoes.reduce((total, p) => total + p, 0);
-    const base = somaProporcoes > 0 ? proporcoes : proporcoes.map(() => 1);
-    const totalBase = somaProporcoes > 0 ? somaProporcoes : proporcoes.length;
-
-    const exatos = base.map(p => (p / totalBase) * ESCALA_PESO);
-    const unidades = exatos.map(Math.floor);
-
-    const sobra = ESCALA_PESO - unidades.reduce((total, u) => total + u, 0);
-    const maioresRestos = exatos
-        .map((exato, indice) => ({ indice, resto: exato - unidades[indice] }))
-        .sort((a, b) => b.resto - a.resto);
-
-    for (let i = 0; i < sobra; i++) {
-        unidades[maioresRestos[i].indice]++;
-    }
-
-    return unidades.map(u => u / ESCALA_PESO);
 }
 
 class CriterioService {
@@ -131,7 +98,7 @@ class CriterioService {
     }
 
     // RF03: os pesos de todos os critérios são atualizados juntos para manter a soma igual a 1
-    async atualizarPesos(pesos: IPesoRequest[]) {
+    async atualizarPesos(pesos: IPeso[]) {
         const criterios = await CriterioRepository.find();
         const idsExistentes = new Set(criterios.map(c => c.id));
         const idsInformados = new Set(pesos.map(p => p.id));
@@ -146,10 +113,7 @@ class CriterioService {
             throw new AppError(`Informe o peso de todos os critérios. Faltando: ${faltando.join(", ")}.`);
         }
 
-        const soma = pesos.reduce((total, p) => total + Math.round(p.peso * ESCALA_PESO), 0);
-        if (soma !== ESCALA_PESO) {
-            throw new AppError(`A soma dos pesos deve ser 1 (soma informada: ${soma / ESCALA_PESO}).`);
-        }
+        garantirSomaIgualAUm(pesos.map(p => p.peso));
 
         return AppDataSource.transaction(async manager => {
             for (const { id, peso } of pesos) {

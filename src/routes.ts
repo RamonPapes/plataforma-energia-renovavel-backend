@@ -6,6 +6,8 @@ import { Perfil } from "./models/Usuario";
 import { UsuarioController } from "./controllers/UsuarioController";
 import { AuthController } from "./controllers/AuthController";
 import { CriterioController } from "./controllers/CriterioController";
+import { MatrizController } from "./controllers/MatrizController";
+import { SimulacaoController } from "./controllers/SimulacaoController";
 
 const router = Router();
 
@@ -13,6 +15,8 @@ const municipioController = new MunicipioController();
 const usuarioController = new UsuarioController();
 const authController = new AuthController();
 const criterioController = new CriterioController();
+const matrizController = new MatrizController();
+const simulacaoController = new SimulacaoController();
 
 //UC01 somente Administrador cadastra, edita e remove municipio
 router.post("/municipios", ensureAuthenticated, ensureRole(Perfil.ADMINISTRADOR), municipioController.createMunicipioHandle);
@@ -21,6 +25,7 @@ router.delete("/municipios/:id", ensureAuthenticated, ensureRole(Perfil.ADMINIST
 //Qualquer usuário autenticado pode ler os municipios
 router.get("/municipios", ensureAuthenticated, municipioController.getMunicipiosHandle);
 router.get("/municipios/:id", ensureAuthenticated, municipioController.getMunicipioByIdHandle);
+router.get("/municipios/:id/indicadores", ensureAuthenticated, matrizController.getIndicadoresMunicipioHandle);
 
 //UC02 Pesquisador (e Administrador) configura critérios e pesos
 // /criterios/pesos registrada antes de /criterios/:id para "pesos" não ser lido como id
@@ -31,6 +36,17 @@ router.delete("/criterios/:id", ensureAuthenticated, ensureRole(Perfil.PESQUISAD
 //Qualquer usuário autenticado pode ler os critérios
 router.get("/criterios", ensureAuthenticated, criterioController.getCriteriosHandle);
 router.get("/criterios/:id", ensureAuthenticated, criterioController.getCriterioByIdHandle);
+
+// Matriz de decisão: Administrador e Pesquisador lançam os valores dos indicadores
+router.post("/matriz", ensureAuthenticated, ensureRole(Perfil.ADMINISTRADOR, Perfil.PESQUISADOR), matrizController.salvarValoresHandle);
+router.get("/matriz", ensureAuthenticated, matrizController.getMatrizHandle);
+router.get("/matriz/anos", ensureAuthenticated, matrizController.getAnosHandle);
+
+//UC03 qualquer perfil autenticado (Pesquisador, Gestor Público e Administrador) executa o TOPSIS
+router.post("/topsis/executar", ensureAuthenticated, simulacaoController.executarHandle);
+//RF10 histórico de simulações
+router.get("/simulacoes", ensureAuthenticated, simulacaoController.getSimulacoesHandle);
+router.get("/simulacoes/:id", ensureAuthenticated, simulacaoController.getSimulacaoByIdHandle);
 
 // Rotas do próprio usuário logado (registradas antes de /usuarios/:id para "me" não ser lido como id)
 router.get("/usuarios/me", ensureAuthenticated, usuarioController.getMeHandle);
