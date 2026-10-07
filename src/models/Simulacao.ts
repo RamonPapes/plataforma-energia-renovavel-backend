@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn, Relation } from "typeorm";
 import { Usuario } from "./Usuario";
 import { ResultadoRanking } from "./ResultadoRanking";
 import { TipoCriterio } from "./Criterio";
@@ -23,7 +23,7 @@ export class Simulacao {
 
     @ManyToOne(() => Usuario, { onDelete: "RESTRICT" })
     @JoinColumn({ name: "usuario_id" })
-    usuario: Usuario;
+    usuario: Relation<Usuario>;
 
     @Column({ type: "int" })
     ano_referencia: number;
@@ -38,5 +38,5 @@ export class Simulacao {
     data_execucao: Date;
 
     @OneToMany(() => ResultadoRanking, resultado => resultado.simulacao)
-    resultados: ResultadoRanking[];
+    resultados: Relation<ResultadoRanking>[];
 }

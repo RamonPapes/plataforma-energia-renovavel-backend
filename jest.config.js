@@ -2,6 +2,13 @@
 module.exports = {
     testEnvironment: "node",
     roots: ["<rootDir>/tests"],
+    testMatch: ["**/*.test.ts"],
+    // variáveis de teste (banco *_test) e criação/migração do banco antes da suíte
+    setupFiles: ["<rootDir>/tests/setup/env.ts"],
+    globalSetup: "<rootDir>/tests/setup/globalSetup.ts",
+    // os testes de integração compartilham o mesmo banco: um arquivo por vez
+    maxWorkers: 1,
+    testTimeout: 30000,
     // ts-jest não suporta TypeScript 7, por isso os .ts são transpilados com o SWC
     transform: {
         "^.+\\.ts$": ["@swc/jest", {
