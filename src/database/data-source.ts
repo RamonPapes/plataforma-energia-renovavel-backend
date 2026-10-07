@@ -1,6 +1,8 @@
 import "reflect-metadata";
 import path from "path";
 import { DataSource } from "typeorm";
+import { Municipio } from "../models/Municipio";
+import { Usuario } from "../models/Usuario";
 
 export const AppDataSource = new DataSource({
     type: "mysql",
@@ -12,18 +14,8 @@ export const AppDataSource = new DataSource({
     synchronize: false,
     logging: false,
     // Entidades importadas diretamente para funcionar tanto com tsx (src/*.ts) quanto com o build (dist/*.js)
-    entities: ["src/models/*.ts"],
-    migrations: ["src/database/migrations/*.ts"],
+    entities: [Municipio, Usuario],
+    // __dirname aponta para src/database (tsx) ou dist/database (build), por isso aceita .ts e .js
+    migrations: [path.join(__dirname, "migrations", "*.{ts,js}")],
     subscribers: [],
 })
-
-
-export const initializeDataSource = async () => {
-    try{
-        await AppDataSource.initialize();
-        console.log("Data Source has been initialized!");
-    }
-    catch(err){
-        console.error("Error during Data Source initialization", err)
-    }
-}
