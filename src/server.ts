@@ -1,11 +1,9 @@
 import "reflect-metadata";
 import express, { NextFunction, Request, Response, response } from "express";
 import { initializeDataSource } from "./database/data-source";
-// import { router } from "./routes";
+import { router } from "./routes";
 
 const PORT = Number(process.env.PORT ?? 3000);
-
-
 
 initializeDataSource()
     .then(() =>{
@@ -13,8 +11,10 @@ initializeDataSource()
 
         app.use(express.json());
 
-        app.listen(3000, () => {
-            console.log(`Server is running`);
+        app.use(router);
+
+        app.listen(PORT, () => {
+            console.log(`Server is running in port ${PORT}`);
         })
     })
     .catch((err) => {
