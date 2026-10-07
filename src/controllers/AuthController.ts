@@ -15,17 +15,9 @@ class AuthController {
 
         const authService = new AuthService();
 
-        try {
-            const { token, usuario } = await authService.login({ email, senha });
+        const { token, usuario } = await authService.login({ email, senha });
 
-            return res.status(200).json({ token, usuario });
-
-        } catch (error) {
-            if (error instanceof Error) {
-                return res.status(401).json({ error: error.message });
-            }
-            return res.status(500).json({ error: "Erro interno inesperado." });
-        }
+        return res.status(200).json({ token, usuario });
     }
 }
 

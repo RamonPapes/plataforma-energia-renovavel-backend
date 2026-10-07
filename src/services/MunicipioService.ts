@@ -1,3 +1,4 @@
+import { AppError } from "../errors/AppError";
 import { MunicipioRepository } from "../repository/municipioRepository";
 
 interface IMunicipioRequest {
@@ -16,7 +17,7 @@ class MunicipioService {
         });
 
         if (municipioAlreadyExists) {
-            throw new Error("Este município já está cadastrado para esta UF.");
+            throw new AppError("Este município já está cadastrado para esta UF.", 409);
         }
 
         const municipio = await MunicipioRepository.create({

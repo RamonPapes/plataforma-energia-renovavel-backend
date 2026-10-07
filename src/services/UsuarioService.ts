@@ -1,4 +1,5 @@
 import { hash } from "bcryptjs";
+import { AppError } from "../errors/AppError";
 import { UsuarioRepository } from "../repository/usuarioRepository";
 import { Perfil } from "../models/Usuario";
 
@@ -14,7 +15,7 @@ class UsuarioService {
         const usuarioAlreadyExists = await UsuarioRepository.findOneBy({ email });
 
         if (usuarioAlreadyExists) {
-            throw new Error("E-mail já cadastrado.");
+            throw new AppError("E-mail já cadastrado.", 409);
         }
 
         const senhaHash = await hash(senha, 10); // 10 = salt rounds

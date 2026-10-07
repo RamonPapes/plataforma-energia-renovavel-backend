@@ -12,7 +12,9 @@
     "migration:run": "npm run typeorm -- migration:run -d src/database/data-source.ts",
     "migration:generate": "npm run typeorm -- migration:generate -d src/database/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d src/database/data-source.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "migration:run:prod": "typeorm migration:run -d dist/database/data-source.js",
+    "test": "jest",
+    "test:cov": "jest --coverage"
   },
   "keywords": [],
   "author": "",
@@ -27,9 +29,15 @@
     "typeorm": "^1.1.1"
   },
   "devDependencies": {
+    "@swc/core": "^1.16.13",
+    "@swc/jest": "^0.2.39",
     "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.6.4",
+    "@types/supertest": "^7.2.1",
+    "jest": "^30.5.2",
+    "supertest": "^7.3.1",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   }

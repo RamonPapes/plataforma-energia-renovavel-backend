@@ -1,5 +1,6 @@
 import { compare } from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { AppError } from "../errors/AppError";
 import { UsuarioRepository } from "../repository/usuarioRepository";
 
 interface IAuthRequest{
@@ -18,7 +19,7 @@ class AuthService {
             .getOne();
 
         if(!usuario || !(await compare(senha, usuario.senha))){
-            throw new Error("E-mail ou senha inválidos");
+            throw new AppError("E-mail ou senha inválidos", 401);
         }
 
         const token = jwt.sign(
@@ -26,7 +27,8 @@ class AuthService {
             process.env.JWT_SECRET as string,
             {
                 subject: String(usuario.id),
-                expiresIn: (process.env.JWT_EXPIRES_IN) as jwt.SignOptions["expiresIn"],
+                // sem JWT_EXPIRES_IN o jwt.sign lança erro, por isso o padrão de 1 dia
+                expiresIn: (process.env.JWT_EXPIRES_IN ?? "1d") as jwt.SignOptions["expiresIn"],
             }
         );
 

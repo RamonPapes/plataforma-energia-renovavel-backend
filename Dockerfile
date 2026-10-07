@@ -24,4 +24,5 @@ COPY --from=build /app/dist ./dist
 USER node
 EXPOSE 3000
 
-CMD ["node", "dist/server.js"]
+# Aplica as migrations pendentes antes de subir a API
+CMD ["sh", "-c", "npm run migration:run:prod && node dist/server.js"]
