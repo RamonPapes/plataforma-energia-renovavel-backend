@@ -21,8 +21,15 @@ export class Usuario {
     @Column({ type: "varchar", length: 255, select: false })
     senha: string;
 
+    // código de "esqueci minha senha" (hash) e sua validade; nunca são devolvidos pela API
+    @Column({ type: "char", length: 64, nullable: true, unique: true, select: false })
+    reset_senha_token: string | null;
+
+    @Column({ type: "datetime", nullable: true, select: false })
+    reset_senha_expira_em: Date | null;
+
     toJSON(){
-        const { senha, ...rest } = this;
+        const { senha, reset_senha_token, reset_senha_expira_em, ...rest } = this;
         return rest;
     }
 
