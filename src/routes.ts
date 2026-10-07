@@ -12,15 +12,16 @@ const municipioController = new MunicipioController();
 const usuarioController = new UsuarioController();
 const authController = new AuthController();
 
-//UC01 somente Administrador cadastra municipio
+//UC01 somente Administrador cadastra, edita e remove municipio
 router.post("/municipios", ensureAuthenticated, ensureRole(Perfil.ADMINISTRADOR), municipioController.createMunicipioHandle);
+router.put("/municipios/:id", ensureAuthenticated, ensureRole(Perfil.ADMINISTRADOR), municipioController.updateMunicipioHandle);
+router.delete("/municipios/:id", ensureAuthenticated, ensureRole(Perfil.ADMINISTRADOR), municipioController.deleteMunicipioHandle);
 //Qualquer usuário autenticado pode ler os municipios
 router.get("/municipios", ensureAuthenticated, municipioController.getMunicipiosHandle);
+router.get("/municipios/:id", ensureAuthenticated, municipioController.getMunicipioByIdHandle);
 
-// Somente ADM cadastra usuários
 router.post("/usuarios", ensureAuthenticated, ensureRole(Perfil.ADMINISTRADOR), usuarioController.createUserHandle);
 
-// Login
 router.post("/login", authController.loginHandle);
 
 export { router }
