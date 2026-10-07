@@ -4,6 +4,9 @@ import { DataSource } from "typeorm";
 import { Municipio } from "../models/Municipio";
 import { Usuario } from "../models/Usuario";
 import { Criterio } from "../models/Criterio";
+import { MatrizDecisao } from "../models/MatrizDecisao";
+import { Simulacao } from "../models/Simulacao";
+import { ResultadoRanking } from "../models/ResultadoRanking";
 
 export const AppDataSource = new DataSource({
     type: "mysql",
@@ -16,7 +19,7 @@ export const AppDataSource = new DataSource({
     logging: false,
     timezone: "Z",
     // Entidades importadas diretamente para funcionar tanto com tsx (src/*.ts) quanto com o build (dist/*.js)
-    entities: [Municipio, Usuario, Criterio],
+    entities: [Municipio, Usuario, Criterio, MatrizDecisao, Simulacao, ResultadoRanking],
     // __dirname aponta para src/database (tsx) ou dist/database (build), por isso aceita .ts e .js
     migrations: [path.join(__dirname, "migrations", "*.{ts,js}")],
     subscribers: [],

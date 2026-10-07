@@ -3,6 +3,7 @@ import { CriterioService } from "../services/CriterioService";
 import { TipoCriterio } from "../models/Criterio";
 import { AppError } from "../errors/AppError";
 import { parseInteiroPositivo, parsePaginacao } from "../utils/parametros";
+import { validarListaPesos } from "../utils/pesos";
 
 function validarTipo(tipo: unknown) {
     // aceita também minúsculas ("beneficio", "custo"), como no roteiro
@@ -41,32 +42,6 @@ function validarCriterio(body: Record<string, unknown> = {}) {
         tipo: validarTipo(tipo),
         unidade: validarTextoOpcional(unidade, "unidade", 50),
     };
-}
-
-function validarPesos(pesos: unknown) {
-    if (!Array.isArray(pesos) || pesos.length === 0) {
-        throw new AppError("Informe a lista de pesos: { \"pesos\": [{ \"id\": 1, \"peso\": 0.2 }, ...] }.");
-    }
-
-    const ids = new Set<number>();
-
-    return pesos.map(item => {
-        const id = parseInteiroPositivo(item?.id, "id");
-        const peso = item?.peso;
-
-        if (ids.has(id)) throw new AppError(`O critério ${id} foi informado mais de uma vez.`);
-        ids.add(id);
-
-        if (typeof peso !== "number" || peso < 0 || peso > 1) {
-            throw new AppError(`O peso do critério ${id} deve ser um número entre 0 e 1.`);
-        }
-        // a coluna guarda 4 casas decimais; mais que isso seria arredondado sem aviso
-        if (Math.abs(peso * 10000 - Math.round(peso * 10000)) > 1e-9) {
-            throw new AppError(`O peso do critério ${id} deve ter no máximo 4 casas decimais.`);
-        }
-
-        return { id, peso };
-    });
 }
 
 class CriterioController {
@@ -127,7 +102,7 @@ class CriterioController {
     }
 
     async atualizarPesosHandle(req: Request, res: Response) {
-        const pesos = validarPesos(req.body?.pesos);
+        const pesos = validarListaPesos(req.body?.pesos);
 
         const criterioService = new CriterioService();
 

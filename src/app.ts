@@ -5,7 +5,8 @@ import { errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
 
-app.use(express.json());
+// o padrão é 100kb; o lote da matriz de decisão (até 5.000 valores) precisa de mais
+app.use(express.json({ limit: "1mb" }));
 
 app.use("/api", router);
 
