@@ -9,6 +9,7 @@ import { CriterioController } from "./controllers/CriterioController";
 import { MatrizController } from "./controllers/MatrizController";
 import { SimulacaoController } from "./controllers/SimulacaoController";
 import { RelatorioController } from "./controllers/RelatorioController";
+import { DashboardController } from "./controllers/DashboardController";
 
 const router = Router();
 
@@ -19,6 +20,7 @@ const criterioController = new CriterioController();
 const matrizController = new MatrizController();
 const simulacaoController = new SimulacaoController();
 const relatorioController = new RelatorioController();
+const dashboardController = new DashboardController();
 
 //UC01 somente Administrador cadastra, edita e remove municipio
 router.post("/municipios", ensureAuthenticated, ensureRole(Perfil.ADMINISTRADOR), municipioController.createMunicipioHandle);
@@ -26,6 +28,8 @@ router.put("/municipios/:id", ensureAuthenticated, ensureRole(Perfil.ADMINISTRAD
 router.delete("/municipios/:id", ensureAuthenticated, ensureRole(Perfil.ADMINISTRADOR), municipioController.deleteMunicipioHandle);
 //Qualquer usuário autenticado pode ler os municipios
 router.get("/municipios", ensureAuthenticated, municipioController.getMunicipiosHandle);
+// registrada antes de /municipios/:id para "geojson" não ser lido como id
+router.get("/municipios/geojson", ensureAuthenticated, dashboardController.geoMunicipiosHandle);
 router.get("/municipios/:id", ensureAuthenticated, municipioController.getMunicipioByIdHandle);
 router.get("/municipios/:id/indicadores", ensureAuthenticated, matrizController.getIndicadoresMunicipioHandle);
 
@@ -43,12 +47,16 @@ router.get("/criterios/:id", ensureAuthenticated, criterioController.getCriterio
 router.post("/matriz", ensureAuthenticated, ensureRole(Perfil.ADMINISTRADOR, Perfil.PESQUISADOR), matrizController.salvarValoresHandle);
 router.get("/matriz", ensureAuthenticated, matrizController.getMatrizHandle);
 router.get("/matriz/anos", ensureAuthenticated, matrizController.getAnosHandle);
+router.get("/matriz/geojson", ensureAuthenticated, dashboardController.geoIndicadorHandle);
 
 //UC03 qualquer perfil autenticado (Pesquisador, Gestor Público e Administrador) executa o TOPSIS
 router.post("/topsis/executar", ensureAuthenticated, simulacaoController.executarHandle);
 //RF10 histórico de simulações
 router.get("/simulacoes", ensureAuthenticated, simulacaoController.getSimulacoesHandle);
 router.get("/simulacoes/:id", ensureAuthenticated, simulacaoController.getSimulacaoByIdHandle);
+router.get("/simulacoes/:id/geojson", ensureAuthenticated, dashboardController.geoSimulacaoHandle);
+//RF05 cards do dashboard
+router.get("/dashboard/resumo", ensureAuthenticated, dashboardController.resumoHandle);
 //UC04 relatórios da simulação (o Gestor Público é o ator principal, mas qualquer perfil autenticado pode gerar)
 router.get("/relatorios/:id/pdf", ensureAuthenticated, relatorioController.pdfHandle);
 router.get("/relatorios/:id/csv", ensureAuthenticated, relatorioController.csvHandle);

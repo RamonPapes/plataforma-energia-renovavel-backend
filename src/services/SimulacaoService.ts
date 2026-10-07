@@ -1,6 +1,7 @@
 import { AppError } from "../errors/AppError";
 import { AppDataSource } from "../database/data-source";
 import { topsis } from "../domain/topsis";
+import { classificarVulnerabilidade } from "../domain/faixasVulnerabilidade";
 import { Simulacao, IParametrosSimulacao } from "../models/Simulacao";
 import { ResultadoRanking } from "../models/ResultadoRanking";
 import { SimulacaoRepository } from "../repository/simulacaoRepository";
@@ -173,6 +174,7 @@ class SimulacaoService {
                 ci: r.coeficiente_ci,
                 distanciaPositiva: r.distancia_positiva,
                 distanciaNegativa: r.distancia_negativa,
+                faixa: classificarVulnerabilidade(r.coeficiente_ci).faixa,
             })),
         };
     }
