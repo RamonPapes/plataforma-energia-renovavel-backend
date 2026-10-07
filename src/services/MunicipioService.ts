@@ -1,6 +1,7 @@
-import { Not, QueryFailedError } from "typeorm";
+import { Not } from "typeorm";
 import { AppError } from "../errors/AppError";
 import { Coordenadas } from "../database/transformers";
+import { isRegistroReferenciado } from "../database/errors";
 import { MunicipioRepository } from "../repository/municipioRepository";
 
 interface IMunicipioRequest {
@@ -88,9 +89,8 @@ class MunicipioService {
         try {
             await MunicipioRepository.delete({ id });
         } catch (error) {
-            // O MySQL recusa apagar um registro ainda referenciado por uma FK (RESTRICT/NO ACTION, o padrão),
-            // como acontecerá com a matriz de decisão e os resultados de simulações
-            if (error instanceof QueryFailedError && (error.driverError as { code?: string }).code === "ER_ROW_IS_REFERENCED_2") {
+            // matriz de decisão e resultados de simulações referenciam o município
+            if (isRegistroReferenciado(error)) {
                 throw new AppError("O município possui dados vinculados (matriz de decisão ou simulações) e não pode ser removido.", 409);
             }
             throw error;

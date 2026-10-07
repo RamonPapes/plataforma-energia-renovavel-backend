@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { MunicipioService } from "../services/MunicipioService";
 import { AppError } from "../errors/AppError";
+import { parseInteiroPositivo, parsePaginacao } from "../utils/parametros";
 
 const UFS = [
     "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA",
     "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO",
 ];
 
-const LIMIT_PADRAO = 50;
 // RNF01 prevê TOPSIS com até 500 alternativas, então o front consegue buscar todas de uma vez
 const LIMIT_MAXIMO = 500;
 
@@ -46,16 +46,6 @@ function validarMunicipio(body: Record<string, unknown> = {}) {
     };
 }
 
-function parseInteiroPositivo(valor: unknown, nome: string) {
-    const numero = Number(valor);
-
-    if (!Number.isInteger(numero) || numero < 1) {
-        throw new AppError(`O parâmetro ${nome} deve ser um número inteiro positivo.`);
-    }
-
-    return numero;
-}
-
 class MunicipioController {
     async createMunicipioHandle(req: Request, res: Response) {
         const dados = validarMunicipio(req.body);
@@ -68,25 +58,20 @@ class MunicipioController {
     }
 
     async getMunicipiosHandle(req: Request, res: Response) {
-        const { uf, page, limit } = req.query;
+        const { uf } = req.query;
 
         if (uf !== undefined && (typeof uf !== "string" || !UFS.includes(uf.toUpperCase()))) {
             throw new AppError("UF inválida.");
         }
 
-        const pagina = page === undefined ? 1 : parseInteiroPositivo(page, "page");
-        const limite = limit === undefined ? LIMIT_PADRAO : parseInteiroPositivo(limit, "limit");
-
-        if (limite > LIMIT_MAXIMO) {
-            throw new AppError(`O parâmetro limit deve ser no máximo ${LIMIT_MAXIMO}.`);
-        }
+        const { page, limit } = parsePaginacao(req.query, LIMIT_MAXIMO);
 
         const municipioService = new MunicipioService();
 
         const municipios = await municipioService.getMunicipios({
             uf: uf?.toUpperCase(),
-            page: pagina,
-            limit: limite,
+            page,
+            limit,
         });
 
         return res.status(200).json(municipios);
