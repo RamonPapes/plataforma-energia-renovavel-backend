@@ -33,6 +33,12 @@ services:
       ADMIN_NOME: ${ADMIN_NOME:-Administrador}
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       ADMIN_SENHA: ${ADMIN_SENHA}
+      PESQUISADOR_NOME: ${PESQUISADOR_NOME:-Pesquisador}
+      PESQUISADOR_EMAIL: ${PESQUISADOR_EMAIL:-}
+      PESQUISADOR_SENHA: ${PESQUISADOR_SENHA:-}
+      GESTOR_NOME: ${GESTOR_NOME:-Gestor Público}
+      GESTOR_EMAIL: ${GESTOR_EMAIL:-}
+      GESTOR_SENHA: ${GESTOR_SENHA:-}
     ports:
       - "${PORT:-3000}:${PORT:-3000}"
     depends_on:

@@ -83,7 +83,7 @@ cp .env.example .env    # depois preencha DB_PASSWORD, JWT_SECRET, ADMIN_EMAIL e
 docker compose up --build
 ```
 
-Ao subir, o container da API **aplica as migrations automaticamente**: cria as tabelas, o usuário administrador (com `ADMIN_EMAIL`/`ADMIN_SENHA`) e os 7 critérios do roteiro. A API fica em **http://localhost:3000/api** e a documentação em **http://localhost:3000/api/docs**.
+Ao subir, o container da API **aplica as migrations automaticamente**: cria as tabelas, o usuário administrador (com `ADMIN_EMAIL`/`ADMIN_SENHA`), os 7 critérios do roteiro e a [base de exemplo](#dados-de-exemplo) (10 municípios com todos os indicadores, um pesquisador e um gestor público). A API fica em **http://localhost:3000/api** e a documentação em **http://localhost:3000/api/docs**.
 
 ### Opção 2: desenvolvimento local (com recarga automática)
 
@@ -118,6 +118,9 @@ Configure no arquivo `.env` (modelo em [.env.example](.env.example)). O `.env` n
 | `ADMIN_NOME` | não (padrão `Administrador`) | Nome do administrador criado pelo seed |
 | `ADMIN_EMAIL` | **sim, na 1ª execução** | E-mail do administrador inicial |
 | `ADMIN_SENHA` | **sim, na 1ª execução** | Senha do administrador inicial |
+| `PESQUISADOR_NOME` / `GESTOR_NOME` | não | Nomes dos usuários de exemplo (padrão `Pesquisador` / `Gestor Público`) |
+| `PESQUISADOR_EMAIL` / `PESQUISADOR_SENHA` | não | Pesquisador de exemplo. Sem eles, o usuário não é criado |
+| `GESTOR_EMAIL` / `GESTOR_SENHA` | não | Gestor público de exemplo. Sem eles, o usuário não é criado |
 
 Para gerar um `JWT_SECRET` aleatório:
 
@@ -327,6 +330,28 @@ usuarios ──< simulacoes ──< resultados_ranking >── municipios ──
 | `resultados_ranking` | Ci, distâncias e posição de cada município em cada simulação |
 
 **Integridade:** município, critério ou usuário com dados vinculados (valores na matriz ou simulações) **não pode ser removido** (a API retorna `409`), o que preserva o histórico. Os resultados são apagados junto com a sua simulação.
+
+### Dados de exemplo
+
+A migration [SeedDadosExemplo](src/database/migrations/1791382876313-SeedDadosExemplo.ts) deixa o sistema pronto para executar o TOPSIS:
+
+- **10 municípios** com valores em todos os 7 indicadores no ano **2024**:
+  - os municípios A, B e C do **exemplo 7.3 do roteiro** (C1 a C5 da tabela; C6 e C7 completados mantendo B > A > C);
+  - os 7 municípios do modo de demonstração do frontend (Juazeiro, Uauá, Cametá, Barcelos, Jordão, Araçuaí e Chapecó).
+- **Pesquisador e Gestor Público** de exemplo, com as credenciais `PESQUISADOR_*` e `GESTOR_*` do `.env`.
+
+Os valores são ilustrativos, não são dados oficiais. Para reproduzir o exemplo 7.3 pela tela do TOPSIS, selecione só os municípios A, B e C e use os pesos 0,20 / 0,20 / 0,15 / 0,25 / 0,20 em C1 a C5 e 0 em C6 e C7: o resultado é B > A > C, com Ci de A = 0,336058.
+
+### Limpar o banco
+
+Para apagar todos os dados e recriar o banco do zero (tabelas, admin, critérios e dados de exemplo):
+
+```bash
+docker compose down -v          # remove os containers e o volume do MySQL
+docker compose up --build       # recria o banco e aplica as migrations
+```
+
+No desenvolvimento local (opção 2), use `docker compose down -v && docker compose up -d db` e depois `npm run migration:run`.
 
 **Migrations** (em [src/database/migrations](src/database/migrations)):
 
